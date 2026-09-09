@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "COSY Studio",
+      "hasCanvas": false,
+      "bodyTextLen": 1255,
+      "bodyTextHash": "284c4a8a42b23d5565e483d0c1e8899557f774c9c01d8fec531f28bb02968832",
+      "bodyTextPrefix": "COSY Studio Open workspace BLUEPRINT SCANNER Powered by COSY Stu",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "COSY Studio",
+      "hasCanvas": false,
+      "bodyTextLen": 1255,
+      "bodyTextHash": "284c4a8a42b23d5565e483d0c1e8899557f774c9c01d8fec531f28bb02968832",
+      "bodyTextPrefix": "COSY Studio Open workspace BLUEPRINT SCANNER Powered by COSY Stu",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}
