@@ -6,6 +6,8 @@ Build and keep a production-grade workspace named **COSY Studio**.
 Tagline: “Scan. Understand. Rebuild. Ship.”
 Subtitle: “Turn a public website or a Blueprint ZIP into an editable, verified application workspace.”
 
+Public source: [github.com/ENZO7700/cosy-studio](https://github.com/ENZO7700/cosy-studio)
+
 This is one product, not three demos:
 
 1. Blueprint Scanner — public URL / ZIP evidence
@@ -42,3 +44,7 @@ TanStack Start + PGLite/Postgres. Spec mentions of Next.js + Prisma map here; do
 ## Tests
 
 `npm run test:all` is the product gate. Details in docs/product/TESTING.md.
+
+## Docs map
+
+See [docs/README.md](docs/README.md).

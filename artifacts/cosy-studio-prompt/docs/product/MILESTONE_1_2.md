@@ -1,5 +1,7 @@
 # Milestones 1 + 2 — shipped
 
+Canonical roadmap: [ROADMAP.md](ROADMAP.md).
+
 ## Milestone 1 — workspace shell
 
 - Product landing
