@@ -3,3 +3,9 @@ node_modules/
 .github_repo
 .env
 .env.*
+.tanstack/
+.vercel/
+.grok/
+screenshots/
+*.log
+.DS_Store
