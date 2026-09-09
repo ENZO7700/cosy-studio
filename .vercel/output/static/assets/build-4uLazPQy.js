@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime-BkSabwWG.js";import{t}from"./milestone-state-CgeUIjbE.js";var n=e(),r=()=>(0,n.jsx)(t,{milestone:5,feature:`Build verification`});export{r as component};
