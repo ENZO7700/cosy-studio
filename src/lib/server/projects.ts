@@ -3,14 +3,24 @@ import { z } from "zod";
 import { getSql } from "@/lib/db";
 import { importBlueprintZip, buildSampleBlueprintZip } from "@/lib/blueprint/zip-import";
 import { persistBlueprintImport } from "@/lib/server/persist-blueprint";
+import { scanPublicSource } from "@/lib/scanner/scan";
+import { scannerBlueprintToCosy, evidenceFromScan } from "@/lib/server/promote-scan";
+import type { Blueprint as ScanBlueprint } from "@/lib/blueprint/types";
 import type {
   ActivityEvent,
+  ArchitectureNode,
+  BuildRun,
+  CanvasMessage,
   EvidenceItem,
+  ExportArtifact,
+  GeneratedFile,
   Json,
   ProjectDetail,
   ProjectListItem,
+  RiskItem,
   SourceImport,
   SourceType,
+  TaskItem,
 } from "@/lib/cosy/types";
 
 const CreateIdeaInput = z.object({
@@ -25,6 +35,15 @@ const ImportZipInput = z.object({
   name: z.string().trim().min(1).max(120),
   filename: z.string().min(1).max(240),
   zipBase64: z.string().min(8),
+  targetStack: z.string(),
+  scope: z.string(),
+  authorized: z.boolean(),
+});
+
+const ScanInput = z.object({
+  name: z.string().trim().min(1).max(120),
+  sourceUrl: z.string().trim().max(2000).optional().default(""),
+  pastedHtml: z.string().max(1_500_000).optional().default(""),
   targetStack: z.string(),
   scope: z.string(),
   authorized: z.boolean(),
@@ -85,7 +104,19 @@ export const getProject = createServerFn({ method: "GET" })
     const project = projects[0];
     if (!project) return null;
 
-    const [blueprintRows, evidenceRows, importRows, activityRows] = await Promise.all([
+    const [
+      blueprintRows,
+      evidenceRows,
+      importRows,
+      activityRows,
+      architectureRows,
+      riskRows,
+      taskRows,
+      fileRows,
+      buildRows,
+      exportRows,
+      messageRows,
+    ] = await Promise.all([
       sql<{
         id: string;
         version: number;
@@ -120,6 +151,62 @@ export const getProject = createServerFn({ method: "GET" })
         message: string;
         created_at: string;
       }>`select id, actor, type, message, created_at from activity_events where project_id = ${data.id} order by created_at desc limit 20`,
+      sql<{
+        id: string;
+        parent_id: string | null;
+        category: string;
+        title: string;
+        data: Json;
+        state: string;
+      }>`select id, parent_id, category, title, data, state from architecture_nodes where project_id = ${data.id}`,
+      sql<{
+        id: string;
+        severity: string;
+        score: number | null;
+        confidence: number | string | null;
+        evidence: string | null;
+        mitigation: string | null;
+        status: string;
+      }>`select id, severity, score, confidence, evidence, mitigation, status from risks where project_id = ${data.id} order by score desc nulls last`,
+      sql<{
+        id: string;
+        phase: string | null;
+        title: string;
+        description: string | null;
+        priority: string | null;
+        estimate_hours: number | string | null;
+        acceptance_criteria: Json;
+        status: string;
+      }>`select id, phase, title, description, priority, estimate_hours, acceptance_criteria, status from tasks where project_id = ${data.id}`,
+      sql<{
+        id: string;
+        path: string;
+        code: string;
+        language: string | null;
+        version: number;
+      }>`select id, path, code, language, version from generated_files where project_id = ${data.id} order by path`,
+      sql<{
+        id: string;
+        status: string;
+        command: string | null;
+        stdout: string | null;
+        stderr: string | null;
+        exit_code: number | null;
+        started_at: string;
+        completed_at: string | null;
+      }>`select id, status, command, stdout, stderr, exit_code, started_at, completed_at from build_runs where project_id = ${data.id} order by started_at desc limit 8`,
+      sql<{
+        id: string;
+        type: string;
+        storage_ref: string | null;
+        created_at: string;
+      }>`select id, type, storage_ref, created_at from export_artifacts where project_id = ${data.id} order by created_at desc`,
+      sql<{
+        id: string;
+        role: string;
+        body: string;
+        created_at: string;
+      }>`select id, role, body, created_at from canvas_messages where project_id = ${data.id} order by created_at asc limit 40`,
     ]);
 
     const mapped = mapProject(project);
@@ -129,9 +216,7 @@ export const getProject = createServerFn({ method: "GET" })
       label: row.label,
       value: row.value,
       confidence:
-        row.confidence === null || row.confidence === undefined
-          ? null
-          : Number(row.confidence),
+        row.confidence === null || row.confidence === undefined ? null : Number(row.confidence),
       sourceReference: row.source_reference,
       state: row.state,
       notes: row.notes,
@@ -153,6 +238,66 @@ export const getProject = createServerFn({ method: "GET" })
       message: row.message,
       createdAt: row.created_at,
     }));
+    const architecture: ArchitectureNode[] = architectureRows.map((row) => ({
+      id: row.id,
+      parentId: row.parent_id,
+      category: row.category,
+      title: row.title,
+      data: row.data,
+      state: row.state,
+    }));
+    const risks: RiskItem[] = riskRows.map((row) => ({
+      id: row.id,
+      severity: row.severity,
+      score: row.score,
+      confidence:
+        row.confidence === null || row.confidence === undefined ? null : Number(row.confidence),
+      evidence: row.evidence,
+      mitigation: row.mitigation,
+      status: row.status,
+    }));
+    const tasks: TaskItem[] = taskRows.map((row) => ({
+      id: row.id,
+      phase: row.phase,
+      title: row.title,
+      description: row.description,
+      priority: row.priority,
+      estimateHours:
+        row.estimate_hours === null || row.estimate_hours === undefined
+          ? null
+          : Number(row.estimate_hours),
+      acceptanceCriteria: row.acceptance_criteria,
+      status: row.status,
+    }));
+    const files: GeneratedFile[] = fileRows.map((row) => ({
+      id: row.id,
+      path: row.path,
+      code: row.code,
+      language: row.language,
+      version: row.version,
+    }));
+    const builds: BuildRun[] = buildRows.map((row) => ({
+      id: row.id,
+      status: row.status,
+      command: row.command,
+      stdout: row.stdout,
+      stderr: row.stderr,
+      exitCode: row.exit_code,
+      startedAt: row.started_at,
+      completedAt: row.completed_at,
+    }));
+    const exports: ExportArtifact[] = exportRows.map((row) => ({
+      id: row.id,
+      type: row.type,
+      storageRef: row.storage_ref,
+      createdAt: row.created_at,
+    }));
+    const canvasMessages: CanvasMessage[] = messageRows.map((row) => ({
+      id: row.id,
+      role: row.role,
+      body: row.body,
+      createdAt: row.created_at,
+    }));
 
     return {
       project: { ...mapped, ideaBrief: project.idea_brief },
@@ -168,6 +313,13 @@ export const getProject = createServerFn({ method: "GET" })
       evidence,
       imports,
       activity,
+      architecture,
+      risks,
+      tasks,
+      files,
+      builds,
+      exports,
+      canvasMessages,
     };
   });
 
@@ -175,7 +327,7 @@ export const createIdeaProject = createServerFn({ method: "POST" })
   .validator((input: unknown) => CreateIdeaInput.parse(input))
   .handler(async ({ data }) => {
     if (!data.authorized) {
-      return { ok: false as const, errors: ["Authorization confirmation is required before import."] };
+      return { ok: false as const, errors: ["Najprv zaškrtnite, že na to máte právo."] };
     }
     const sql = await getSql();
     const id = crypto.randomUUID();
@@ -190,7 +342,7 @@ export const createIdeaProject = createServerFn({ method: "POST" })
       [
         crypto.randomUUID(),
         id,
-        `Project created from a written idea.`,
+        `Projekt vznikol z napísaného nápadu.`,
         JSON.stringify({ sourceType: "blank" }),
       ],
     );
@@ -220,6 +372,30 @@ export const importZipProject = createServerFn({ method: "POST" })
     return { ok: true as const, id: saved.id };
   });
 
+export const scanPublicProject = createServerFn({ method: "POST" })
+  .validator((input: unknown) => ScanInput.parse(input))
+  .handler(async ({ data }) => {
+    const scanned = await scanPublicSource({
+      authorized: data.authorized,
+      sourceUrl: data.sourceUrl,
+      pastedHtml: data.pastedHtml,
+    });
+    if (!scanned.ok) {
+      return { ok: false as const, errors: scanned.errors };
+    }
+    const sql = await getSql();
+    const saved = await persistBlueprintImport(sql, {
+      name: data.name,
+      filename: data.sourceUrl ? "public-scan.html" : "pasted.html",
+      targetStack: data.targetStack,
+      scope: data.scope,
+      sourceType: "url",
+      sourceUrl: data.sourceUrl || null,
+      parsed: scanned,
+    });
+    return { ok: true as const, id: saved.id, partial: scanned.partial };
+  });
+
 export const sampleZip = createServerFn({ method: "GET" }).handler(async () => {
   const bytes = buildSampleBlueprintZip();
   return {
@@ -227,3 +403,41 @@ export const sampleZip = createServerFn({ method: "GET" }).handler(async () => {
     base64: Buffer.from(bytes).toString("base64"),
   };
 });
+
+export const promoteScanToProject = createServerFn({ method: "POST" })
+  .validator((input: unknown) =>
+    z
+      .object({
+        blueprint: z.unknown(),
+        authorized: z.boolean(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data }) => {
+    if (!data.authorized) {
+      return { ok: false as const, errors: ["Najprv zaškrtnite, že na to máte právo."] };
+    }
+    const bp = data.blueprint as ScanBlueprint;
+    const cosy = scannerBlueprintToCosy(bp);
+    const evidence = evidenceFromScan(bp);
+    const html = typeof bp.html === "string" ? bp.html : "";
+    const sql = await getSql();
+    const saved = await persistBlueprintImport(sql, {
+      name: bp.meta?.title || "Sken webu",
+      filename: "public-scan.html",
+      targetStack: "next_ts_tailwind",
+      scope: "frontend_rebuild",
+      sourceType: "url",
+      sourceUrl: bp.finalUrl || bp.sourceUrl || null,
+      parsed: {
+        blueprint: cosy,
+        evidence,
+        contentHash: bp.contentHash || "scan",
+        html,
+        files: ["blueprint.json", "index.html"],
+        uncompressedBytes: Buffer.byteLength(html),
+        warnings: Array.isArray(cosy.warnings) ? cosy.warnings.map(String) : [],
+      },
+    });
+    return { ok: true as const, id: saved.id };
+  });

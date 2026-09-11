@@ -38,7 +38,7 @@ test("normalizeZipPath rejects traversal and absolute paths", () => {
 });
 
 test("authorization confirmation is required", () => {
-  assert.equal(assertAuthorized(false), "Authorization confirmation is required before import.");
+  assert.equal(assertAuthorized(false), "Najprv zaškrtnite, že na to máte právo.");
   assert.equal(assertAuthorized(true), null);
   const denied = importBlueprintZip(buildSampleBlueprintZip(), {
     filename: "ok.zip",
@@ -46,7 +46,7 @@ test("authorization confirmation is required", () => {
   });
   assert.equal(denied.ok, false);
   if (!denied.ok) {
-    assert.ok(denied.errors.some((error) => error.includes("Authorization")));
+    assert.ok(denied.errors.some((error) => error.includes("právo")));
   }
 });
 

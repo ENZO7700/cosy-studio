@@ -10,6 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BillingRouteImport } from './routes/billing'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ScanRouteImport } from './routes/scan'
+import { Route as WorkspaceRouteImport } from './routes/workspace'
 import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
 import { Route as ProjectsIdRouteImport } from './routes/projects/$id'
 import { Route as ProjectsNewRouteImport } from './routes/projects/new'
@@ -26,6 +30,26 @@ import { Route as ProjectsIdTasksRouteImport } from './routes/projects/$id/tasks
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BillingRoute = BillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScanRoute = ScanRouteImport.update({
+  id: '/scan',
+  path: '/scan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkspaceRoute = WorkspaceRouteImport.update({
+  id: '/workspace',
+  path: '/workspace',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
@@ -91,6 +115,10 @@ const ProjectsIdTasksRoute = ProjectsIdTasksRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/billing': typeof BillingRoute
+  '/dashboard': typeof DashboardRoute
+  '/scan': typeof ScanRoute
+  '/workspace': typeof WorkspaceRoute
   '/projects/$id': typeof ProjectsIdRouteWithChildren
   '/projects/new': typeof ProjectsNewRoute
   '/projects/': typeof ProjectsIndexRoute
@@ -106,6 +134,10 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/billing': typeof BillingRoute
+  '/dashboard': typeof DashboardRoute
+  '/scan': typeof ScanRoute
+  '/workspace': typeof WorkspaceRoute
   '/projects/new': typeof ProjectsNewRoute
   '/projects': typeof ProjectsIndexRoute
   '/projects/$id/architecture': typeof ProjectsIdArchitectureRoute
@@ -121,6 +153,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/billing': typeof BillingRoute
+  '/dashboard': typeof DashboardRoute
+  '/scan': typeof ScanRoute
+  '/workspace': typeof WorkspaceRoute
   '/projects/$id': typeof ProjectsIdRouteWithChildren
   '/projects/new': typeof ProjectsNewRoute
   '/projects/': typeof ProjectsIndexRoute
@@ -138,6 +174,10 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/billing'
+    | '/dashboard'
+    | '/scan'
+    | '/workspace'
     | '/projects/$id'
     | '/projects/new'
     | '/projects/'
@@ -153,6 +193,10 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/billing'
+    | '/dashboard'
+    | '/scan'
+    | '/workspace'
     | '/projects/new'
     | '/projects'
     | '/projects/$id/architecture'
@@ -167,6 +211,10 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/billing'
+    | '/dashboard'
+    | '/scan'
+    | '/workspace'
     | '/projects/$id'
     | '/projects/new'
     | '/projects/'
@@ -183,6 +231,10 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BillingRoute: typeof BillingRoute
+  DashboardRoute: typeof DashboardRoute
+  ScanRoute: typeof ScanRoute
+  WorkspaceRoute: typeof WorkspaceRoute
   ProjectsIdRoute: typeof ProjectsIdRouteWithChildren
   ProjectsNewRoute: typeof ProjectsNewRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
@@ -195,6 +247,34 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/billing': {
+      id: '/billing'
+      path: '/billing'
+      fullPath: '/billing'
+      preLoaderRoute: typeof BillingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scan': {
+      id: '/scan'
+      path: '/scan'
+      fullPath: '/scan'
+      preLoaderRoute: typeof ScanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/workspace': {
+      id: '/workspace'
+      path: '/workspace'
+      fullPath: '/workspace'
+      preLoaderRoute: typeof WorkspaceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/projects/': {
@@ -314,6 +394,10 @@ const ProjectsIdRouteWithChildren = ProjectsIdRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BillingRoute: BillingRoute,
+  DashboardRoute: DashboardRoute,
+  ScanRoute: ScanRoute,
+  WorkspaceRoute: WorkspaceRoute,
   ProjectsIdRoute: ProjectsIdRouteWithChildren,
   ProjectsNewRoute: ProjectsNewRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,

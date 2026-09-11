@@ -6,46 +6,46 @@ export const Route = createFileRoute("/")({ component: Home });
 
 const PANELS = [
   {
-    kicker: "01 Scan Site",
-    title: "Evidence summary",
+    kicker: "01 Pozrieme stránku",
+    title: "Čo je verejne vidieť",
     rows: [
       "WordPress 6.4.3",
-      "Theme: Astra Child",
-      "Plugins: 23 active",
-      "Content: 1,842 posts/pages",
-      "Forms: 6",
-      "Integrations: 3",
+      "Téma: Astra Child",
+      "Doplnky: 23 aktívnych",
+      "Obsah: 1 842 stránok",
+      "Formuláre: 6",
+      "Napojenia: 3",
     ],
   },
   {
-    kicker: "02 Reconstruct Blueprint",
-    title: "Architecture overview",
+    kicker: "02 Povieme, čo tam je",
+    title: "Ako je stránka poskladaná",
     rows: [
-      "WordPress Core · Theme · Plugins",
-      "Templates: 42",
-      "Custom Fields: 57",
-      "Taxonomies: 12",
-      "Menu locations: 7",
+      "WordPress · téma · pluginy",
+      "Šablóny: 42",
+      "Vlastné polia: 57",
+      "Kategórie: 12",
+      "Menu: 7",
     ],
   },
   {
-    kicker: "03 Detect Migration Risks",
-    title: "Risk summary",
+    kicker: "03 Ukážeme riziká",
+    title: "Čo sa môže pokaziť",
     rows: [
-      "High: PHP version compatibility",
-      "High: Plugin dependency risk",
-      "Medium: Custom code complexity",
-      "Overall: Elevated",
+      "Vysoké: verzia PHP",
+      "Vysoké: závislosť na pluginoch",
+      "Stredné: vlastný kód",
+      "Celkovo: vyššie riziko",
     ],
   },
   {
-    kicker: "04 Generate Cursor Plan",
-    title: "Prioritized tasks",
+    kicker: "04 Pripravíme plán",
+    title: "Čo spraviť ako prvé",
     rows: [
-      "Migrate theme and templates — 8h",
-      "Rebuild custom post types — 6h",
-      "Replace plugin functionality — 8h",
-      "Total: 30h",
+      "Nový vzhľad a šablóny — 8 h",
+      "Typy obsahu — 6 h",
+      "Nahradiť pluginy — 8 h",
+      "Spolu: 30 h",
     ],
   },
 ];
@@ -59,35 +59,64 @@ function Home() {
           <span className="text-sm font-semibold">COSY Studio</span>
         </div>
         <Link to="/projects" className="text-sm text-muted hover:text-fg">
-          Open workspace
+          Otvoriť projekty
         </Link>
       </header>
 
       <section className="mx-auto w-full max-w-6xl px-4 pb-16 pt-6">
-        <p className="text-[11px] uppercase tracking-[0.2em] text-accent">Blueprint Scanner</p>
-        <p className="mt-2 text-xs text-muted">Powered by COSY Studio</p>
+        <p className="text-[11px] uppercase tracking-[0.2em] text-accent">Nástroj na prestavbu webu</p>
+        <p className="mt-2 text-xs text-muted">COSY Studio</p>
         <h1 className="mt-4 max-w-3xl text-4xl font-semibold tracking-tight text-fg md:text-5xl">
-          Website intelligence that becomes a real application workspace.
+          Z starej stránky urobíte novú aplikáciu.
         </h1>
         <p className="mt-4 max-w-2xl text-muted">
-          Scan a public website or upload a Blueprint ZIP. COSY Studio reconstructs the visible
-          architecture, identifies migration risks, generates an implementation plan, and builds a
-          verified application foundation.
+          Vložíte odkaz alebo súbor zo stránky. COSY vám ukáže, čo na nej vidí, a pripraví základ
+          novej aplikácie. Nie je to kópia jedna k jednej — je to nový začiatok podľa toho, čo je na
+          verejnej stránke vidieť.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link to="/projects/new">
             <Button>
-              Start a Blueprint
+              Začať projekt
               <ArrowRight className="size-4" />
             </Button>
           </Link>
+          <Link to="/scan">
+            <Button variant="secondary">Otvoriť skener</Button>
+          </Link>
           <Link to="/projects/$id" params={{ id: "demo-iluminat" }}>
-            <Button variant="secondary">View Demo Project</Button>
+            <Button variant="secondary">Pozrieť ukážku</Button>
           </Link>
         </div>
         <p className="mt-4 text-xs text-muted">
-          Public frontend intelligence. No private data extraction. No vendor lock-in.
+          Iba verejné veci. Nič súkromné. Ukážkový projekt ILUMINAT má pripravenosť 62 % — slušný
+          obraz, nie všetko.
         </p>
+
+        <div className="mt-12 grid gap-3 md:grid-cols-3">
+          {[
+            {
+              title: "Pozrieme stránku",
+              body: "Odkaz alebo súbor. Iba verejné veci. Nič súkromné.",
+            },
+            {
+              title: "Povieme vám, čo tam je",
+              body: "Farby, formuláre, WordPress, kde sú riziká.",
+            },
+            {
+              title: "Pripravíme nový základ",
+              body: "Súbory, ktoré viete stiahnuť a ďalej upraviť.",
+            },
+          ].map((card) => (
+            <article
+              key={card.title}
+              className="rounded-lg bg-elevated p-4 shadow-[0_0_0_1px_var(--color-line)]"
+            >
+              <h2 className="text-sm font-semibold">{card.title}</h2>
+              <p className="mt-2 text-sm text-muted">{card.body}</p>
+            </article>
+          ))}
+        </div>
 
         <div className="mt-12 grid gap-3 md:grid-cols-2">
           {PANELS.map((panel) => (
@@ -107,11 +136,10 @@ function Home() {
         </div>
 
         <section className="mt-16 max-w-2xl">
-          <h2 className="text-xl font-semibold">From website evidence to working code</h2>
+          <h2 className="text-xl font-semibold">Od verejnej stránky k novému základu</h2>
           <p className="mt-3 text-sm text-muted">
-            Built for serious rebuilds, not generic mockups. This slice ships foundation plus
-            Blueprint ZIP import. Scanner, Canvas, live builds, and billing stay scheduled — and
-            labeled as such.
+            Pre vážne prestavby, nie pre falošné náhľady. Číslo pripravenosti hovorí, koľko o stránke
+            vieme — nie ako presne ju skopírujeme.
           </p>
         </section>
       </section>

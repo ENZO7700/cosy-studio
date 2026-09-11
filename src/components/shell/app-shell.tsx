@@ -1,20 +1,25 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   Box,
+  CreditCard,
   FolderKanban,
   Home,
-  MoreHorizontal,
   Plus,
   ScanSearch,
+  Users,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { to: "/", label: "Home", icon: Home },
-  { to: "/projects", label: "Projects", icon: FolderKanban },
-  { to: "/projects/new", label: "New", icon: Plus },
+  { to: "/", label: "Úvod", icon: Home },
+  { to: "/scan", label: "Sken", icon: ScanSearch },
+  { to: "/projects", label: "Projekty", icon: FolderKanban },
+  { to: "/projects/new", label: "Nový projekt", icon: Plus },
+  { to: "/workspace", label: "Tím", icon: Users },
+  { to: "/billing", label: "Plán", icon: CreditCard },
 ];
+
 
 export function AppShell({
   children,
@@ -36,7 +41,7 @@ export function AppShell({
           <ScanSearch className="size-4 text-accent" />
           <div>
             <div className="text-sm font-semibold tracking-tight">COSY Studio</div>
-            <div className="text-[11px] text-muted">Scan. Understand. Rebuild.</div>
+            <div className="text-[11px] text-muted">Pozri stránku. Pochop ju. Postav novú.</div>
           </div>
         </div>
         <nav className="flex flex-1 flex-col gap-1 px-3">
@@ -45,8 +50,9 @@ export function AppShell({
               item.to === "/"
                 ? pathname === "/"
                 : item.to === "/projects"
-                  ? pathname === "/projects"
-                  : pathname.startsWith(item.to);
+                  ? pathname === "/projects" ||
+                    (pathname.startsWith("/projects/") && !pathname.startsWith("/projects/new"))
+                  : pathname === item.to;
             const Icon = item.icon;
             return (
               <Link
@@ -62,8 +68,6 @@ export function AppShell({
               </Link>
             );
           })}
-          <div className="mt-6 px-3 text-[10px] uppercase tracking-[0.16em] text-muted">Later</div>
-          <div className="px-3 py-2 text-xs text-muted">Templates, Team, Billing — Milestone 8</div>
         </nav>
       </aside>
 
@@ -82,10 +86,10 @@ export function AppShell({
 
       <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-line bg-panel md:hidden">
         {[
-          { to: "/", label: "Home", icon: Home },
-          { to: "/projects", label: "Projects", icon: Box },
-          { to: "/projects/new", label: "New", icon: Plus },
-          { to: "/projects", label: "More", icon: MoreHorizontal },
+          { to: "/", label: "Úvod", icon: Home },
+          { to: "/projects", label: "Projekty", icon: Box },
+          { to: "/projects/new", label: "Nový", icon: Plus },
+          { to: "/workspace", label: "Tím", icon: Users },
         ].map((item) => {
           const Icon = item.icon;
           return (

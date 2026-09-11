@@ -60,7 +60,7 @@ function stripSharedRoot(paths: string[]): Map<string, string> {
 
 export function assertAuthorized(authorized: boolean): string | null {
   if (!authorized) {
-    return "Authorization confirmation is required before import.";
+    return "Najprv zaškrtnite, že na to máte právo.";
   }
   return null;
 }

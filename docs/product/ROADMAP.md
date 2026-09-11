@@ -4,7 +4,7 @@
 
 - Product landing
 - Projects list with Demo ILUMINAT
-- Project layout: Overview, Blueprint, later-milestone stubs
+- Project layout: Overview, Blueprint, later engines
 - Dark technical UI, gold accent
 - Seeded demo Blueprint + evidence ledger
 
@@ -17,28 +17,27 @@
 - Persist: `projects`, `source_imports`, `blueprints`, `evidence_items`, `activity_events`
 - Sample ZIP download
 - Archives are never executed
-- `test:all` (unit, persist, HTTP + browser smoke)
 
-## Milestone 3 — Scanner
+## Milestone 3 — Scanner — **shipped**
 
-Public URL / pasted HTML. Rendered HTML, static HTTP fallback, Wayback fallback, crawl, asset capture, partial scan recovery, SSRF protection. Blueprint JSON produced by the scanner is the same ZIP contract as M2.
+Public URL / pasted HTML. Same-origin crawl (budgeted), static HTTP, Wayback fallback, SSRF protection, partial scan recovery. Blueprint JSON matches the ZIP contract.
 
-## Milestone 4 — Understand
+## Milestone 4 — Understand — **shipped**
 
-Architecture graph, risk engine, task / Cursor planner. Readiness score computed from evidence, not a mock percentage.
+Architecture graph, risk engine, Cursor task planner. Rebuild readiness % is computed from evidence.
 
-## Milestone 5 — Rebuild
+## Milestone 5 — Rebuild — **shipped**
 
-Real project files, workflow events, versions, build verification (real exit 0), repair loop after failure.
+Generated application files, repair loop, workspace verification (`cosy-verify`) with stored exit code. No fake “build verified” without exit 0.
 
-## Milestone 6 — Canvas
+## Milestone 6 — Canvas — **shipped**
 
-Live preview shell. Diff + code + chat in one workspace. No fake “build verified” until M5 is real.
+Generated-preview iframe (never executes uploaded ZIP HTML), code pane, workspace notes.
 
-## Milestone 7 — Export
+## Milestone 7 — Export — **shipped**
 
-Application project ZIP and Cursor plan ZIP.
+Application project ZIP and Cursor plan ZIP from the generated tree.
 
-## Milestone 8 — SaaS
+## Milestone 8 — Workspace / billing — **shipped (sandbox)**
 
-Organizations, roles, billing, Stripe. Every project action respects org permissions.
+Organization labels, roles, plan picker. Billing events are **sandbox** — Stripe is not charged. Auth stays off; rows remain unowned.

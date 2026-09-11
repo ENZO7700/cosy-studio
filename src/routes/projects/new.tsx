@@ -8,7 +8,7 @@ export const Route = createFileRoute("/projects/new")({
 
 function NewProjectPage() {
   return (
-    <AppShell kicker="New project" title="Start a Blueprint">
+    <AppShell kicker="Nový projekt" title="Začať projekt">
       <NewProjectForm />
     </AppShell>
   );

@@ -21,14 +21,13 @@ This is one product, not three demos:
 - Public data only. Authorization confirmation before ZIP / URL work.
 - Never execute uploaded archives.
 - No 1:1 clone claim. Evidence-backed rebuild.
-- No fake “build verified” / live preview until that milestone exists.
+- No fake “build verified” / live preview of captured HTML. Canvas previews generated files only. Verification is `cosy-verify` exit 0.
 - Demo data must be labeled Demo.
+- Billing is sandbox unless Stripe is explicitly connected.
 
 ## Current shipped scope
 
-Milestone 1 + 2 only: schema, project shell, secure Blueprint ZIP import, persist, honest later-milestone empty states, tests.
-
-Do not jump to M3–M8 in one pass.
+Milestones 1–8 in this workspace: schema, scanner, understand, rebuild, canvas, exports, sandbox org/billing. Auth remains off; rows are unowned.
 
 ## Legal / trust
 

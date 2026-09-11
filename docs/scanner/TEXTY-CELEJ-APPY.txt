@@ -1,0 +1,697 @@
+Blueprint Scanner — všetky texty v aplikácii
+============================================
+Stav: 11. 9. 2026
+Jazyk dokumentu: slovenčina (normálna, bez hesla a bez „takt / trezor / evidencia“)
+Názvy, ktoré NEPREKLADÁME: Blueprint Scanner, Cursor, WordPress, Elementor, JetEngine, JSON, ZIP, HTML, CSS, REST, HTTP, Wayback, Next.js, Tailwind, GitHub
+
+Legenda
+-------
+TERAZ      = čo je dnes na obrazovke
+NORMÁLNE   = návrh, ktorým to nahradíme (obyčajná veta, nie slogan)
+
+Ak napíšeš „použiť“, pretiahneme stĺpec NORMÁLNE do aplikácie.
+
+
+================================================================
+A. HOMEPAGE (landing)
+================================================================
+
+----------------------------------------------------------------
+1. Cover (horná obrazovka)
+----------------------------------------------------------------
+TERAZ
+  Logo / názov:     Blueprint Scanner
+  Navigácia:        Prehľad
+  Nadpis malý:      WordPress → Cursor. Kopilot na migráciu.
+  Hlavný nadpis:    Skenuj  Škáluj  Spi  Opakuj
+  Text (telefón):   Verejná URL → tokeny, Elementor, Cursor brief.
+  Text (počítač):   Skenuj. Škáluj. Spi. Opakuj. Verejná URL alebo HTML sa zmení na tokeny, Elementor šablónu a Cursor brief — namiesto týždňa reverzu.
+  Štítok poľa:      začni tu
+  Placeholder:      https://moj-wordpress-web.sk
+  Tlačidlo poľa:    skenovať →
+  Hlavné tlačidlo:  Vytvoriť blueprint
+  Podtext:          bez registrácie · lokálny vault · JSON / ZIP
+  Šípka dole:       ďalej
+  Alt obrázka:      Zlatý wireframe webu v tmavom ateliéri
+
+NORMÁLNE
+  Logo / názov:     Blueprint Scanner
+  Navigácia:        Prehľad
+  Nadpis malý:      Pomôcka na presun WordPress webu do Cursoru
+  Hlavný nadpis:    Z webu spravíš zadanie na prestavbu
+  Text:             Vlož verejnú adresu. Aplikácia z nej vytiahne farby, písmo, štruktúru a Elementor podklady. Dostaneš JSON a text, ktorý vložíš do Cursoru. Web sa netvorí za teba.
+  Štítok poľa:      Adresa webu
+  Placeholder:      https://moj-wordpress-web.sk
+  Tlačidlo poľa:    Skenovať
+  Hlavné tlačidlo:  Spustiť sken
+  Podtext:          Bez účtu. Uložené len u teba. Výstup JSON alebo ZIP.
+  Šípka dole:       Ďalej
+  Alt obrázka:      Nákres webu v tmavom priestore
+
+----------------------------------------------------------------
+2. Ako to prebieha  (#pipeline)
+----------------------------------------------------------------
+TERAZ
+  Malý nadpis:      takt 01–04
+  Nadpis:           Cudzí web sa tu končí
+  Úvod:             Štyri údery, jeden sken. Dole máš prompt pre Cursor — nie kópiu stránky, nie hádanie farieb z DevTools.
+  01 Skenuj:        Verejná URL alebo vložené HTML. Enter spustí sken. Localhost a súkromné siete ostanú za zámkou.
+                    značka: vstup zamknutý
+  02 Škáluj:        Najprv headless vyrenderuje JS. Padne? HTTP. Padne aj to? Wayback. Prechod ostáva na rovnakej doméne, najviac 20 strán.
+                    značka: DOM · WP · tokeny
+  03 Spi:           Blueprint JSON s hashom. CCT, listingy, Elementor, formuláre. Trezor je tvoj — lokálne, 40 snímok.
+                    značka: snímka v trezore
+  04 Opakuj:        Brief pre Cursor, Next.js, HTML+CSS, Tailwind, špecifikácia. Kopírovať alebo súbor. Žiadny klon. Inventár.
+                    značka: prilep a stavaj
+  Pätička:          vstup URL / HTML  →  výstup brief · JSON · ZIP    nikdy server · DB · .env
+  Odkaz:            spustiť sken
+
+NORMÁLNE
+  Malý nadpis:      Ako to prebieha
+  Nadpis:           Od adresy k zadaniu pre vývojára
+  Úvod:             Jeden sken. Na konci máš text pre Cursor, nie kópiu webu a nie odhad farieb z prehliadača.
+  01 Adresa:        Zadáš verejnú URL alebo vložíš HTML. Enter spustí sken. Adresy v súkromnej sieti a na tomto počítači sa neskúšajú.
+                    značka: súkromné adresy sú blokované
+  02 Spracovanie:   Najprv sa stránka vyrenderuje aj s JavaScriptom. Ak to nejde, ide sa cez obyčajné HTML. Ak ani to, skúsi sa archív Wayback. Prejde sa najviac 20 strán na rovnakej doméne.
+                    značka: štruktúra, WordPress, farby
+  03 Uloženie:      Výsledok je JSON so záznamom o stránke, formulároch, Elementore a listingoch. Uloží sa u teba, najviac 40 záznamov.
+                    značka: uložené u teba
+  04 Ďalšia práca:  Dostaneš zadanie pre Cursor, Next.js, HTML+CSS alebo Tailwind. Skopíruješ ho alebo stiahneš. Nie je to hotový web.
+                    značka: skopíruj a stavaj
+  Pätička:          vstup: URL alebo HTML    výstup: zadanie, JSON, ZIP    nikdy: server, databáza, .env
+  Odkaz:            Spustiť sken
+
+----------------------------------------------------------------
+3. Čo to vie  (#funkcie)
+----------------------------------------------------------------
+TERAZ
+  Malý nadpis:      čo to drží
+  Nadpis:           Signál, nie snímka
+  Úvod:             Šesť vrstiev, ktoré brief naozaj potrebuje. Žiadne ozdobné karty — inventár.
+  01 URL aj HTML:   Verejná adresa, alebo vložený zdroj stránky. Základná URL drží relatívne cesty.
+  02 Prechod strán: Až 20 strán na rovnakej doméne. Chyba jednej adresy nezhodí celý sken.
+  03 Reťazec:       Headless → HTTP → Wayback. JS sa vyrenderuje, až potom sa vzdávame.
+  04 Tokeny:        Farby, písmo, CSS premenné, formuláre, meta, technológie.
+  05 WordPress:     REST, CCT, JetEngine listingy, globálne štýly, Elementor import.
+  06 Brief pre Cursor: Prompt na prestavbu a Tailwind fragment. Prilep. Nestavaj od nuly.
+
+NORMÁLNE
+  Malý nadpis:      Čo sken zachytí
+  Nadpis:           Podklady na prestavbu, nie obrázok stránky
+  Úvod:             Šesť vecí, ktoré vývojár naozaj potrebuje. Bez ozdobných kariet.
+  01 Adresa alebo HTML: Verejná adresa, alebo vložený kód stránky. Základná adresa doplní relatívne cesty.
+  02 Ďalšie stránky:    Najviac 20 strán na rovnakej doméne. Ak jedna zlyhá, ostatné sa uložia.
+  03 Ako sa načítava:   Najprv s JavaScriptom, potom obyčajné HTML, nakoniec archív Wayback.
+  04 Dizajn:            Farby, písmo, CSS premenné, formuláre, meta údaje a použité technológie.
+  05 WordPress:         Verejné REST, typy CCT, JetEngine listingy, globálne štýly a Elementor podklad.
+  06 Zadanie pre Cursor: Text na prestavbu a kúsok Tailwind nastavenia. Vložíš ho a začneš od podkladov, nie od nuly.
+
+----------------------------------------------------------------
+4. Výstup  (#vystup)
+----------------------------------------------------------------
+TERAZ
+  Malý nadpis:      výstup
+  Nadpis:           Nie snímka. Blueprint.
+  Úvod:             Verzionovaný JSON: tokeny, sekcie, stav. Uložíš, porovnáš, odošleš. Pixelová kópia to nie je — je to evidencia, z ktorej sa stavajú.
+  Štatistiky:
+    70–90 %   evidencie frontendu
+    ≤ 20      strán na sken
+    40        snímok v trezore
+    4         exportné formáty
+  Panel:            blueprint.json    hotovo    kopírovať
+  Záložky:          celý / stránka / tokeny / stav
+  JSON ukážka:      (kľúče v angličtine, to je kód — nemeníme)
+                    "title": "Domov"
+                    "scanStatus": "complete"
+
+NORMÁLNE
+  Malý nadpis:      Čo dostaneš
+  Nadpis:           Štruktúrovaný JSON, nie screenshot
+  Úvod:             Záznam o stránke: farby, sekcie a stav skenu. Uložíš ho, porovnáš s ďalším skenom, alebo ho odošleš. Nie je to kópia webu.
+  Štatistiky:
+    70–90 %   zachyteného verejného webu
+    najviac 20 strán na jeden sken
+    40        uložených skenov u teba
+    4         typy súborov na stiahnutie
+  Panel:            blueprint.json    hotovo    Kopírovať
+  Záložky:          celý / stránka / tokeny / stav
+
+----------------------------------------------------------------
+5. Exporty  (#exporty)
+----------------------------------------------------------------
+TERAZ
+  Malý nadpis:      exporty
+  Nadpis:           Štyri súbory. Nula klonov.
+  Úvod:             Čo si odnesieš zo skenu. Nie web. Inventár, ktorý ide do editora.
+  blueprint.json                      Celý záznam. Kopírovať alebo stiahnuť zo skenu.
+  capture.zip                         Zachytené súbory spolu s JSON. Na odovzdanie ďalej.
+  elementor-template-import.json      Importovateľná šablóna. v0.4, nie magický 1:1.
+  cursor-brief.md                     Prompt na prestavbu a architektúra. Shift v skene stiahne súbor.
+
+NORMÁLNE
+  Malý nadpis:      Súbory na stiahnutie
+  Nadpis:           Štyri súbory. Žiadny hotový web.
+  Úvod:             Toto si zo skenu odnesieš. Nie kópiu webu, ale podklady do editora.
+  blueprint.json                      Celý záznam skenu. Skopíruješ ho alebo stiahneš.
+  capture.zip                         JSON plus stiahnuté súbory. Hodí sa na odovzdanie kolegovi.
+  elementor-template-import.json      Šablóna na import do Elementoru. Verzia 0.4, nie presná kópia.
+  cursor-brief.md                     Textové zadanie na prestavbu. V skene ho stiahneš klávesom Shift.
+
+----------------------------------------------------------------
+6. Hranice  (#hranice)
+----------------------------------------------------------------
+TERAZ
+  Malý nadpis:      čestne
+  Nadpis:           Toto nie je klon
+  Úvod:             Verejný frontend: prestavba, audit, tokeny. To, čo nie je verejné, sa sem nedostane.
+  server:           Žiadny backend, databáza, .env, API kľúče ani relácia.
+  prihlásenie:      Neobchádza prihlasovacie steny. Nezbiera cookies.
+  1:1:              Nesľubuje kópiu celého stacku. Je to snímka frontendu.
+  Zámky:
+    SSRF       localhost, súkromné siete a cloud metadata — zamknuté
+    Súbory     10 MB na súbor · 50 MB spolu · 40 súborov
+    Prechod    najviac 20 strán na rovnakej doméne
+    SPA        bez headless renderu môže ostať prázdny obal
+
+NORMÁLNE
+  Malý nadpis:      Čo to nerobí
+  Nadpis:           Toto nie je kópia webu
+  Úvod:             Skenuje sa len to, čo je verejne viditeľné. Slúži na prestavbu, kontrolu a farby. Skryté veci sem nejdú.
+  server:           Nesťahuje sa kód servera, databáza, súbor .env, API kľúče ani prihlásenie.
+  prihlásenie:      Neprejde cez prihlasovaciu stenu a neukladá cookies.
+  1:1:              Nesľubuje rovnaký web 1:1. Je to záznam verejnej stránky.
+  Obmedzenia:
+    Bezpečnosť     Adresy na tomto počítači, v súkromnej sieti a cloudové metadata sú blokované.
+    Súbory         Najviac 10 MB na súbor, 50 MB spolu, 40 súborov.
+    Stránky        Najviac 20 strán na rovnakej doméne v jednom skene.
+    SPA weby       Bez vykreslenia JavaScriptu môže ostať prázdna stránka.
+
+----------------------------------------------------------------
+7. Rýchly štart  (#start)
+----------------------------------------------------------------
+TERAZ
+  Malý nadpis:      tri príkazy
+  Nadpis:           Klonuj. Nainštaluj. Skenuj.
+  Úvod:             Beží u teba. Žiadny účet. Vlož verejnú URL a stlač Enter.
+  Panel:            terminál    kopírovať / hotovo
+  Príkazy:          git clone … / cd dawn-cabin-raven-baker / npm ci && npm run dev
+  Kroky:            otvor aplikáciu · vlož verejnú URL · Vytvoriť blueprint
+  Toast:            Príkazy v schránke / Kopírovanie zlyhalo
+
+NORMÁLNE
+  Malý nadpis:      Ako to spustiť
+  Nadpis:           Tri príkazy a môžeš skenovať
+  Úvod:             Beží na tvojom počítači. Účet netreba. Vlož verejnú adresu a stlač Enter.
+  Panel:            Terminál    Kopírovať / Hotovo
+  Príkazy:          (rovnaké, to je kód)
+  Kroky:            Otvor aplikáciu. Vlož verejnú adresu. Spusti sken.
+  Toast:            Príkazy sú v schránke. / Kopírovanie sa nepodarilo.
+
+----------------------------------------------------------------
+8. Záverečná výzva  (#cta) a pätička
+----------------------------------------------------------------
+TERAZ
+  Nadpis:           Sken. Škála. Pauza. Znova.
+  Text:             Jeden brief do Cursoru. Nie týždeň v DevTools. Nie klon. Inventár.
+  Tlačidlo:         Spustiť sken
+  Pätička:          Skenuj · Škáluj · Spi · Opakuj     Aplikácia     GitHub
+
+NORMÁLNE
+  Nadpis:           Spusti sken a začni prestavbu
+  Text:             Jeden text do Cursoru namiesto týždňa v prehliadači. Nie je to kópia webu.
+  Tlačidlo:         Spustiť sken
+  Pätička:          Blueprint Scanner     Aplikácia     GitHub
+
+
+================================================================
+B. SKEN  (/scan)
+================================================================
+
+TERAZ
+  Odkaz hore:                 Dashboard
+  Názov:                      Blueprint Scanner
+  Podnadpis:                  WordPress to Cursor Migration Copilot
+  Text:                       Jeden sken. Jeden Architecture Brief. Skopíruj do Cursora.
+  Záložka poľa:               URL / Vložiť HTML
+  Štítok:                     začni tu
+  Placeholder URL:            https://moja-appka.com
+  Placeholder základ:         https://povodna-domena.sk
+  Placeholder HTML:           <!DOCTYPE html>…
+  Príklad:                    Príklad:
+  Možnosti:                   Možnosti:
+  Nápoveda prepínačov:        Krátky tap = nápoveda · podržanie ≈0,5 s = zapnúť/vypnúť · aktívne = neon
+  Tlačidlo:                   Vygenerovať brief
+  Zrušiť:                     Zrušiť
+  Priebeh:                    Skenujem… / Skenovanie prebieha…
+  Zrušené / zlyhalo:          Sken bol zrušený. / Sken zlyhal.
+
+  Prepínače
+    Headless render           Načíta SPA/JS DOM namiesto surového HTML.
+    Wayback fallback          Pri chybe skúsi archive.org snapshot.
+    Crawl stránok             Prejde same-origin podstránky (ON = 5, OFF = 1).
+    Stiahnuť assety           Stiahne obrázky/fonty do ZIP. Predvolene vypnuté — za autorské práva zodpovedáš ty.
+    WP / JetEngine extract    REST, CCT, listing grids, Elementor, sitemap — len verejné endpointy.
+
+  Spodné akcie:               História (N) · Import JSON · Porovnať blueprinty
+  Jazyk:                      Jazyk / English / Slovenčina
+
+NORMÁLNE
+  Odkaz hore:                 Prehľad
+  Názov:                      Blueprint Scanner
+  Podnadpis:                  Pomôcka na presun WordPress webu do Cursoru
+  Text:                       Jeden sken. Jedno zadanie. Skopíruješ ho do Cursoru.
+  Záložka poľa:               Adresa / Vložiť HTML
+  Štítok:                     Adresa webu
+  Placeholder URL:            https://moja-stranka.sk
+  Placeholder základ:         https://povodna-domena.sk
+  Placeholder HTML:           <!DOCTYPE html>…
+  Príklad:                    Príklad:
+  Možnosti:                   Možnosti skenu
+  Nápoveda prepínačov:        Krátke ťuknutie ukáže nápovedu. Podržanie asi pol sekundy prepínač zapne alebo vypne.
+  Tlačidlo:                   Spustiť sken
+  Zrušiť:                     Zrušiť
+  Priebeh:                    Prebieha sken… / Skenovanie prebieha…
+  Zrušené / zlyhalo:          Sken bol zrušený. / Sken sa nepodaril.
+
+  Prepínače
+    Vykresliť JavaScript      Načíta stránku aj s JavaScriptom, nielen holé HTML.
+    Skúsiť archív Wayback     Ak stránka zlyhá, skúsi sa kópia z archive.org.
+    Prejsť ďalšie stránky     Prejde podstránky na rovnakej doméne (zapnuté = 5, vypnuté = 1).
+    Stiahnuť súbory           Stiahne obrázky a písma do ZIP. Predvolene vypnuté — autorské práva sú na tebe.
+    WordPress / JetEngine     Verejné REST, CCT, listingy, Elementor a mapa stránok.
+
+  Spodné akcie:               História (N) · Importovať JSON · Porovnať skeny
+
+
+================================================================
+C. VÝSLEDOK SKENU  (po dokončení)
+================================================================
+
+TERAZ
+  Toast:                Brief pripravený — nie hotový web
+  Toast popis:          {id} · {pages} stránok · skopíruj do Cursora
+  Riadok pod názvom:    {pages} stránok · {assets} assetov · {tech}
+  Štítky:               Stránky / Assety / Odkazy / Čas / Zachytené / Tech
+  Tlačidlá:             Stiahnuť JSON · Elementor JSON · Export ZIP · JSON · Stiahnuť
+  Stavy:                Bez názvu / Čiastočný sken / Prerušený sken / Tenký HTML / Vyrenderované
+  Tenký HTML nadpis:    Tenký HTML shell (SPA)
+  Tenký HTML text:      Server poslal hlavne prázdny obal; obsah sa kreslí v prehliadači. Preferuj Headless render.
+  Zlyhané:              Zlyhané URL (N)
+  Zdroj:                URL sken / HTML import / Wayback
+  Čiastočný:            Čiastočný sken: uložených {saved}/{total} stránok ({failed} zlyhalo)
+  Prerušený:            Prerušený sken: uložených {saved}/{total} stránok ({failed} zlyhalo)
+  Právna poznámka:      Assety ostávajú vypnuté, kým ich nezapneš. Sťahovanie obrázkov a fontov môže zasahovať do autorských práv — toto rozhodnutie je tvoje.
+
+  Záložky:              Prehľad · WP / JetEngine · Elementor JSON · Dizajn · Architecture Brief · Štruktúra · Stránky · Assety · Náhľad · JSON · Brief · Pokročilé
+
+NORMÁLNE
+  Toast:                Zadanie je pripravené. Nie je to hotový web.
+  Toast popis:          {id} · {pages} stránok · skopíruj do Cursoru
+  Riadok pod názvom:    {pages} stránok · {assets} súborov · {tech}
+  Štítky:               Stránky / Súbory / Odkazy / Čas / Zachytené / Technológie
+  Tlačidlá:             Stiahnuť JSON · Elementor JSON · Stiahnuť ZIP · Kopírovať JSON · Stiahnuť
+  Stavy:                Bez názvu / Čiastočný sken / Prerušený sken / Málo HTML / Vykreslené
+  Tenký HTML nadpis:    Stránka prišla takmer prázdna (SPA)
+  Tenký HTML text:      Server poslal hlavne prázdny obal. Obsah sa kreslí v prehliadači. Zapni vykreslenie JavaScriptu.
+  Zlyhané:              Nepodarené adresy (N)
+  Zdroj:                Sken z adresy / Vložené HTML / Archív Wayback
+  Čiastočný:            Čiastočný sken: uložených {saved} z {total} stránok ({failed} zlyhalo)
+  Prerušený:            Prerušený sken: uložených {saved} z {total} stránok ({failed} zlyhalo)
+  Právna poznámka:      Súbory sa sťahujú, len keď to zapneš. Obrázky a písma môžu byť chránené autorským právom — rozhodnutie je tvoje.
+
+  Záložky:              Prehľad · WordPress · Elementor · Dizajn · Zadanie · Štruktúra · Stránky · Súbory · Náhľad · JSON · Zadanie · Ďalšie
+
+
+================================================================
+D. PREHĽAD VÝSLEDKU  (záložka Prehľad)
+================================================================
+
+TERAZ
+  Tech stack                 Signály z HTML, CSS a HTTP hlavičiek
+  Žiadne silné signály.
+  SEO & meta                 Title, description, Open Graph, ikony
+  Limitácie                  Frontend snapshot — nie kópia servera/databázy
+  Popis / Jazyk / Canonical / Téma / Možnosti
+
+NORMÁLNE
+  Technológie                Zistené z HTML, CSS a HTTP hlavičiek
+  Nenašli sa výrazné stopy technológií.
+  SEO a meta                 Názov, popis, Open Graph, ikony
+  Obmedzenia                 Záznam verejnej stránky. Nie je to kópia servera ani databázy.
+  Popis / Jazyk / Kanonická adresa / Téma / Možnosti
+
+
+================================================================
+E. WORDPRESS  (záložka)
+================================================================
+
+TERAZ
+  Žiadny WordPress extract pre tento blueprint.
+  Zapni „WP / JetEngine extract“ pri skene URL pre REST + listing + Elementor signály.
+  Katalóg (N) / Detegované
+  REST API discovery                 /wp-json · pages · jet-cct — verejné endpointy
+  JetEngine CCT typy                 Schéma polí odvodená z verejných záznamov
+  Žiadne verejné CCT typy (endpoint nedostupný alebo prázdny).
+  Jet listing grids                  DOM reverse-engineering opakovaných item templateov + dynamic fields
+  Žiadne jet-listing-grid v DOM.
+  JetEngine dynamic fields           field · link · image · terms · meta — z DOM + data-settings
+  Žiadne jet-listing-dynamic-* v DOM.
+  Elementor sekcie                   data-id · role · headings
+  Žiadne Elementor sekcie.
+  Crawl seed (nav / footer / sitemap)
+  Nav (N) / Footer (N) / Sitemap (N)
+
+NORMÁLNE
+  Pre tento sken nie je WordPress záznam.
+  Pri skene z adresy zapni „WordPress / JetEngine“, aby sa načítali REST, listingy a Elementor.
+  Katalóg (N) / Nájdené
+  REST API                           Verejné adresy /wp-json, pages a jet-cct
+  Typy CCT (JetEngine)               Polia zistené z verejných záznamov
+  Žiadne verejné typy CCT (adresa nefunguje alebo je prázdna).
+  Listingy JetEngine                 Opakované položky a dynamické polia z HTML
+  V HTML nie je žiadny jet-listing-grid.
+  Dynamické polia JetEngine          pole, odkaz, obrázok, termíny, meta
+  V HTML nie sú dynamické polia JetEngine.
+  Sekcie Elementoru                  identifikátor, úloha, nadpisy
+  Nenašli sa sekcie Elementoru.
+  Odkazy na ďalšie stránky (navigácia / pätička / mapa)
+  Navigácia (N) / Pätička (N) / Mapa stránok (N)
+
+
+================================================================
+F. ELEMENTOR  (záložka)
+================================================================
+
+TERAZ
+  Widgety / Uzly
+  Žiadny Elementor draft nebol skompilovaný.
+  Elementor DOM → Template Compiler (draft)
+  Import: Šablóny → Uložené šablóny → Importovať šablóny →
+  Stiahnuť elementor-template-import.json
+  Draft ešte nie je skompilovaný. Spusti nový sken.
+  Hore / Verzia
+  Best-effort draft z verejného DOM. Pred importom do Elementoru skontroluj — toto nie je hotová šablóna.
+
+NORMÁLNE
+  Widgety / Uzly
+  Elementor šablóna sa z tohto skenu ešte neskladala.
+  Prevod HTML do Elementor šablóny (návrh)
+  Import: Šablóny → Uložené šablóny → Importovať šablóny
+  Stiahnuť elementor-template-import.json
+  Návrh ešte nie je hotový. Spusti nový sken.
+  Hore / Verzia
+  Návrh z verejnej stránky. Pred importom do Elementoru ho skontroluj. Nie je to hotová šablóna.
+
+
+================================================================
+G. DIZAJN  (záložka)
+================================================================
+
+TERAZ
+  Farby / Fonty / Typografia / CSS premenné / Obrázky v plnej veľkosti
+  Nič nebolo detegované.
+  Elementor global colors            --e-global-color-* z
+  Žiadne farby v CSS/HTML.
+  font-family · size · weight · line-height · letter-spacing
+  vrátane --e-global-*
+  Žiadne custom properties.
+  Obrázky v plnej veľkosti (WP uploads)
+  Prípony miniatúr (-300x200, -1024x768…) odstránené
+
+NORMÁLNE
+  Farby / Písma / Typografia / CSS premenné / Obrázky v plnej veľkosti
+  Nič sa nenašlo.
+  Globálne farby Elementoru          premenné --e-global-color-*
+  V CSS ani HTML sa nenašli farby.
+  rodina písma, veľkosť, tučnosť, riadkovanie, medzery medzi písmenami
+  vrátane --e-global-*
+  Žiadne vlastné CSS premenné.
+  Obrázky v plnej veľkosti (WordPress uploads)
+  Prípony miniatúr (-300x200, -1024x768…) sú odstránené
+
+
+================================================================
+H. ŠTRUKTÚRA, STRÁNKY, SÚBORY, NÁHĽAD, JSON
+================================================================
+
+TERAZ
+  DOM strom                          Skrátený strom (max hĺbka 5)
+  Nadpisy / Odkazy / Formuláre
+  login · lost password · contact · booking · auth…
+  Crawlované stránky
+  Mapa crawlu (N)                    Primárna stránka + same-origin crawl
+  Primárna
+  Crawl nebol spustený (max pages = 1) alebo neboli interné odkazy.
+  (bez názvu)
+  {count} int. odkazov / {count} formulárov
+  Assety (N) · zachytené {captured}
+  Zachytené súbory idú do ZIP do priečinka assets/
+  Náhľad zachyteného frontendu
+  Sandbox iframe s HTML + CSS. Externé assety podľa CORS.
+  Blueprint JSON                     Kompletný exportovateľný dokument
+
+NORMÁLNE
+  Strom stránky                      Skrátený strom, najviac 5 úrovní
+  Nadpisy / Odkazy / Formuláre
+  prihlásenie, zabudnuté heslo, kontakt, rezervácia, účet
+  Prejdené stránky
+  Mapa stránok (N)                   Hlavná stránka a ďalšie na rovnakej doméne
+  Hlavná
+  Ďalšie stránky sa neprešli (limit 1), alebo na webe neboli vnútorné odkazy.
+  (bez názvu)
+  {count} vnútorných odkazov / {count} formulárov
+  Súbory (N) · uložené {captured}
+  Uložené súbory pôjdu do ZIP do priečinka assets/
+  Náhľad zachytenej stránky
+  Izolovaný náhľad HTML a CSS. Externé súbory závisia od CORS.
+  Blueprint JSON                     Celý dokument na export
+
+
+================================================================
+I. ZADANIE PRE CURSOR  (záložka Architecture Brief)
+================================================================
+
+TERAZ
+  Architecture Brief
+  Architecture-first brief: SPA UI Architecture Compiler + Tailwind tokens. Kopíruj prompt do Claude / ChatGPT / Cursor.
+  Architecture Spec prompt / Klasický rebuild prompt / Tailwind Config
+  Stiahnuť Architecture .txt
+  Thin HTML / SPA — Architecture Compiler beží v agresívnom režime (rekonštrukcia shellu z links/tech/forms).
+  Formuláre áno/nie · Farby
+  Rebuild readiness: {score}%
+  Nie skóre klonu. Koľko verejnej evidencie má Cursor brief. 60–80 % na WP/Jet webe je silný extract — zvyšok je tvoj úsudok v Cursore.
+  Stiahnuť RebuildSpec / Stiahnuť súbor
+  Evidencia je hustá. Stále je to brief, nie odovzdaný web.
+  Stack prompty (z RebuildSpec) / Legacy prompty
+  React + Tailwind / HTML + CSS / Next.js App Router
+  React + Tailwind prompt (náhľad)
+  Sekcie / Komponenty / Medzery
+  Kopírovať Cursor brief
+  Vytiahli sme verejné CCT / listingy / Elementor tokeny a napísali Cursor prompt. Web sme nezrekonštruovali. Readiness % sú hodiny, ktoré nemusíš klikat — nie pixely zadarmo.
+  Čo sme extractovali + prompt na kopírovanie. Medzery ostávajú viditeľné zámerne.
+  Extractované (len verejné)
+  {cct} CCT typov · {listings} listing gridov · {sections} Elementor sekcií · {colors} farebných tokenov · {forms} formulárov
+  Tenká evidencia — pred promptom zapni Headless / Crawl a skenuj znova.
+  Dobrý extract. Vlož do Cursora a doplň vypísané medzery — typicky 1–2 hodiny hľadania schém.
+  Hustý extract. Aj tak skontroluj tokeny a listingy; toto nie je produkčné UI.
+
+  Váhy: Farby (roly) · Typografická škála · Rodiny fontov · Medzery / zaoblenie · Layout sekcie · Komponenty · Textový obsah · Obrázky · Vyrenderovaný shell (nie thin HTML) · Formuláre · Navigácia
+
+  Opravy:
+    Slabá paleta → skenuj znova s Assets ON, aby sa načítali CSS premenné.
+    Chýba type scale → CSS chýba; zapni Assets / Headless.
+    Žiadne @font-face → zapni Assets ON a skenuj znova.
+    Chýba spacing/radius → neúplné CSS; skús Assets ON.
+    Málo sekcií → zapni Crawl pages alebo Headless.
+    Žiadne opakované komponenty → skenuj stránku s listingami/formulármi.
+    Málo textu → SPA shell; zapni Headless render.
+    Žiadne obrázky → zapni Assets ON.
+    SPA shell detegovaný → zapni Headless render a skenuj znova.
+    Žiadne formuláre → otvor stránku kontakt/login a skenuj znova.
+    Žiadna navigácia → crawl viac stránok alebo skontroluj same-origin linky.
+
+NORMÁLNE
+  Zadanie pre Cursor
+  Zadanie podľa architektúry plus farby pre Tailwind. Skopíruješ ho do Claude, ChatGPT alebo Cursoru.
+  Zadanie architektúry / Klasické zadanie na prestavbu / Nastavenie Tailwind
+  Stiahnuť zadanie (.txt)
+  Stránka prišla takmer prázdna. Zadanie sa skladá z odkazov, technológií a formulárov.
+  Formuláre áno/nie · Farby
+  Pripravenosť na prestavbu: {score}%
+  Nie je to skóre, ako veľmi sme web skopírovali. Hovorí, koľko verejných podkladov má zadanie. Na WordPress/JetEngine webe je 60–80 % dobrý výsledok. Zvyšok dopíšeš v Cursore.
+  Stiahnuť špecifikáciu / Stiahnuť súbor
+  Podkladov je dosť. Stále je to zadanie, nie odovzdaný web.
+  Zadania podľa technológie / Staršie zadania
+  React + Tailwind / HTML + CSS / Next.js
+  Náhľad zadania pre React + Tailwind
+  Sekcie / Komponenty / Čo chýba
+  Skopírovať zadanie pre Cursor
+  Z verejnej stránky sme vytiahli CCT, listingy a farby Elementoru a napísali text pre Cursor. Web sme nezostavili. Percentá znamenajú, koľko ručnej práce ušetríš — nie hotové pixely.
+  Čo sa podarilo získať a text na skopírovanie. Chýbajúce veci sú vypísané naschvál.
+  Získané (len verejné)
+  {cct} typov CCT · {listings} listingov · {sections} sekcií Elementoru · {colors} farieb · {forms} formulárov
+  Málo podkladov. Zapni vykreslenie JavaScriptu a prechod ďalších stránok a skenuj znova.
+  Dobrý základ. Vlož ho do Cursoru a doplň vypísané medzery. Zvyčajne 1–2 hodiny.
+  Hustý základ. Aj tak skontroluj farby a listingy. Toto nie je hotové rozhranie.
+
+  Váhy: Farby · Škála písma · Rodiny písma · Medzery a zaoblenie · Sekcie rozloženia · Komponenty · Text · Obrázky · Vykreslená stránka (nie prázdny obal) · Formuláre · Navigácia
+
+  Opravy:
+    Slabá paleta farieb. Skenuj znova so zapnutým sťahovaním súborov, aby sa načítali CSS premenné.
+    Chýba škála písma. Zapni sťahovanie súborov alebo vykreslenie JavaScriptu.
+    Nenašli sa písma. Zapni sťahovanie súborov a skenuj znova.
+    Chýbajú medzery a zaoblenie. Skús zapnúť sťahovanie súborov.
+    Málo sekcií. Zapni prechod ďalších stránok alebo vykreslenie JavaScriptu.
+    Žiadne opakované bloky. Skenuj stránku s listingom alebo formulárom.
+    Málo textu. Zapni vykreslenie JavaScriptu.
+    Žiadne obrázky. Zapni sťahovanie súborov.
+    Stránka je prázdny obal. Zapni vykreslenie JavaScriptu a skenuj znova.
+    Žiadne formuláre. Otvor stránku kontaktu alebo prihlásenia a skenuj znova.
+    Žiadna navigácia. Prejdi viac stránok, alebo skontroluj odkazy na rovnakej doméne.
+
+
+================================================================
+J. HISTÓRIA, POROVNANIE, EXPORT
+================================================================
+
+TERAZ
+  História / História skenov / História (N)
+  Zatiaľ žiadne blueprinty. Spusti prvý sken.
+  Len lokálne / Synchronizované / Vzdialené
+  Načítavam históriu… / História nedostupná / Skúsiť znova
+  Vymazať všetko
+  Zmazať všetky blueprinty z histórie? Táto akcia sa nedá vrátiť.
+  Zmazať tento blueprint z histórie?
+  Nový sken / Zmazať / Zatvoriť / Import JSON
+  História vymazaná
+
+  Porovnať blueprinty
+  Porovná title, hash, tech, odkazy, assety a stránky medzi dvoma snapshotmi.
+  — vyber —
+  Oba blueprinty musia byť v histórii (local). Otvor ich skenom alebo importom.
+  identické / rozdiely
+  Tech +{added} / −{removed}   Assety Δ   Odkazy Δ   Stránky Δ
+  A (vľavo) / B (vpravo)
+
+  Pripravujem export… / Skladám neonovú sieť… / Zamykám sťahovanie… / Uvoľňujem súbor…
+  Export pripravený / Pripravené na tvojom zariadení / Uložené / stiahnuté
+  Súbor / Typ / Veľkosť / Stiahnuť znova / Hotovo / Export zlyhal
+  Blueprint JSON / Elementor template / ZIP archív
+
+NORMÁLNE
+  História / História skenov / História (N)
+  Zatiaľ žiadny sken. Spusti prvý.
+  Len na tomto zariadení / Synchronizované / V cloude
+  Načítavam históriu… / História nie je dostupná / Skúsiť znova
+  Vymazať všetko
+  Naozaj zmazať všetky skeny z histórie? Toto sa nedá vrátiť.
+  Zmazať tento sken z histórie?
+  Nový sken / Zmazať / Zatvoriť / Importovať JSON
+  História je prázdna
+
+  Porovnať skeny
+  Porovná názov, odtlačok, technológie, odkazy, súbory a stránky medzi dvoma záznamami.
+  — vyber sken —
+  Oba záznamy musia byť v histórii na tomto zariadení. Otvor ich skenom alebo importom.
+  zhodné / rozdiely
+  Technológie +{added} / −{removed}   Súbory   Odkazy   Stránky
+  A (vľavo) / B (vpravo)
+
+  Pripravujem súbor… / Skladám archív… / Pripravujem sťahovanie… / Ukladám súbor…
+  Súbor je pripravený / Uložené v zariadení / Uložené
+  Súbor / Typ / Veľkosť / Stiahnuť znova / Hotovo / Export sa nepodaril
+  Blueprint JSON / Šablóna Elementor / Archív ZIP
+
+
+================================================================
+K. PREHĽAD  (/dashboard)
+================================================================
+
+TERAZ
+  Navigácia:        Domov / Dashboard / História / Porovnať / Import
+  Značka:           Copilot
+  Nadpis:           WordPress to Cursor Migration Copilot
+  Text:             Jeden sken → CCT / Elementor tokeny + Cursor prompt. Rebuild readiness hovorí, koľko práce ostáva — nie že sme web naklonovali.
+  Pätička menu:     Copilot hub    /dashboard    Štyri karty. Zvyšok v Pokročilé.
+
+NORMÁLNE
+  Navigácia:        Domov / Prehľad / História / Porovnať / Importovať
+  Značka:           Prehľad
+  Nadpis:           Pomôcka na presun WordPress webu do Cursoru
+  Text:             Jeden sken vytiahne CCT, farby Elementoru a text pre Cursor. Percentá hovoria, koľko práce ešte ostáva — nie že sme web skopírovali.
+  Pätička menu:     Blueprint Scanner    Prehľad    Štyri karty. Ďalšie veci sú v záložke Ďalšie.
+
+
+================================================================
+L. HLÁŠKY  (toasty)
+================================================================
+
+TERAZ
+  Blueprint sa nenašiel v lokálnom úložisku
+  Blueprint zmazaný / Blueprint importovaný / Import zlyhal
+  Kopírované!
+  Architecture Spec prompt je v schránke
+  Klasický rebuild prompt je v schránke
+  Tailwind config fragment je v schránke
+  Architecture prompt stiahnutý
+  ZIP export zlyhal
+  Elementor template: {count} widgetov
+  Elementor export zlyhal
+  JSON skopírovaný / JSON stiahnutý / ZIP archív pripravený
+  React + Tailwind prompt je v schránke
+  HTML + CSS prompt je v schránke
+  Next.js prompt je v schránke
+  Kopírovanie do schránky zlyhalo
+  JSON v schránke   (landing)
+
+NORMÁLNE
+  Záznam sa nenašiel v úložisku na tomto zariadení
+  Sken je zmazaný / Sken je naimportovaný / Import sa nepodaril
+  Skopírované
+  Zadanie architektúry je v schránke
+  Klasické zadanie na prestavbu je v schránke
+  Úryvok Tailwind nastavenia je v schránke
+  Zadanie je stiahnuté
+  ZIP sa nepodarilo pripraviť
+  Šablóna Elementor: {count} widgetov
+  Export do Elementoru sa nepodaril
+  JSON je v schránke / JSON je stiahnutý / ZIP je pripravený
+  Zadanie React + Tailwind je v schránke
+  Zadanie HTML + CSS je v schránke
+  Zadanie Next.js je v schránke
+  Kopírovanie do schránky sa nepodarilo
+
+
+================================================================
+M. META  (prehliadač, PWA)
+================================================================
+
+TERAZ
+  Titulok stránky:   Blueprint Scanner — kopilot na migráciu WordPress → Cursor
+  Popis:             Odskenuj verejnú URL alebo HTML na verzionovaný Blueprint JSON: dizajnové tokeny, formuláre, Elementor šablóna a brief na prestavbu pre Cursor.
+  PWA názov:         Blueprint Scanner / Blueprint
+  PWA popis:         Frontend blueprint z verejnej URL
+  Jazyk PWA:         sk
+  Farba témy:        #0a0a0b
+
+NORMÁLNE
+  Titulok stránky:   Blueprint Scanner — z WordPress webu zadanie pre Cursor
+  Popis:             Odskenuj verejnú adresu alebo HTML. Dostaneš JSON s farbami, formulármi, Elementor podkladom a textom na prestavbu v Cursore.
+  PWA názov:         Blueprint Scanner / Blueprint
+  PWA popis:         Záznam verejnej stránky z URL
+  Jazyk PWA:         sk
+
+
+================================================================
+ČO SA NEMENÍ
+================================================================
+- JSON kľúče a ukážka kódu (url, title, scanStatus, complete…)
+- Názvy súborov: blueprint.json, capture.zip, elementor-template-import.json, cursor-brief.md
+- Terminálové príkazy git / npm
+- Názvy produktov: Cursor, WordPress, Elementor, JetEngine, Next.js, Tailwind
+
+
+ĎALŠÍ KROK
+==========
+Napíš „použiť“ a pretiahnem stĺpec NORMÁLNE do celej aplikácie
+(homepage, sken, prehľad, hlášky, slovenčina aj angličtina).

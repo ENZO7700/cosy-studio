@@ -1,4 +1,4 @@
-# Architecture (M1 + M2)
+# Architecture (M1–M8)
 
 ## App shape
 
@@ -8,45 +8,41 @@ TanStack Start file routes:
 |---|---|
 | `/` | Landing |
 | `/projects` | List + Demo ILUMINAT |
-| `/projects/new` | Import wizard |
+| `/projects/new` | Import / scan wizard |
 | `/projects/$id` | Overview |
 | `/projects/$id/blueprint` | Evidence workspace |
-| `/projects/$id/architecture` | Empty — M4 |
-| `/projects/$id/risks` | Empty — M4 |
-| `/projects/$id/tasks` | Empty — M4 |
-| `/projects/$id/build` | Empty — M5 |
-| `/projects/$id/code` | Empty — M5 |
-| `/projects/$id/canvas` | Empty — M6 |
-| `/projects/$id/exports` | Empty — M7 |
+| `/projects/$id/architecture` | Understand graph |
+| `/projects/$id/risks` | Risk engine |
+| `/projects/$id/tasks` | Cursor planner |
+| `/projects/$id/build` | Workspace verification |
+| `/projects/$id/code` | Generated files |
+| `/projects/$id/canvas` | Generated preview + notes |
+| `/projects/$id/exports` | Application / Cursor ZIP |
+| `/workspace` | Org labels + roles |
+| `/billing` | Sandbox plans |
 
 ## Data
 
-Schema: [`migrations/0002_cosy.sql`](../../migrations/0002_cosy.sql)
+Schema: [`migrations/0002_cosy.sql`](../../migrations/0002_cosy.sql) + [`migrations/0003_engines.sql`](../../migrations/0003_engines.sql)
 
 Auth is **off**. Rows are unowned. Seed org: `org-cosy-demo`.
 
-Tables used now:
+## Engines
 
-- `organizations`
-- `projects`
-- `source_imports`
-- `blueprints`
-- `evidence_items`
-- `activity_events`
-
-Tables reserved for later engines (empty in M2): `architecture_nodes`, `risks`, `tasks`, `generated_files`, `build_runs`, `project_versions`, `export_artifacts`.
-
-Preview uses in-memory PGLite. Deploy uses Postgres when `DATABASE_URL` is set. Same SQL files.
+- Scanner: [`src/lib/scanner/scan.ts`](../../src/lib/scanner/scan.ts) — SSRF, crawl, Wayback, pasted HTML
+- Understand: [`src/lib/understand/`](../../src/lib/understand/)
+- Rebuild: [`src/lib/rebuild/`](../../src/lib/rebuild/) — generate + `cosy-verify`
+- Export: [`src/lib/export/zip.ts`](../../src/lib/export/zip.ts)
+- Persist: [`src/lib/server/persist-blueprint.ts`](../../src/lib/server/persist-blueprint.ts), [`src/lib/server/persist-engines.ts`](../../src/lib/server/persist-engines.ts)
 
 ## Import path
 
-1. Wizard collects name, ZIP bytes, target stack, scope, `authorized`.
-2. [`importBlueprintZip`](../../src/lib/blueprint/zip-import.ts) validates the archive.
-3. [`persistBlueprintImport`](../../src/lib/server/persist-blueprint.ts) writes the five row types.
+1. Wizard collects name, ZIP bytes or URL/HTML, target stack, scope, `authorized`.
+2. ZIP → [`importBlueprintZip`](../../src/lib/blueprint/zip-import.ts) or URL → [`scanPublicSource`](../../src/lib/scanner/scan.ts).
+3. [`persistBlueprintImport`](../../src/lib/server/persist-blueprint.ts) writes the five row types + computed readiness.
 4. User lands on `/projects/$id/blueprint`.
-
-Server functions live in [`src/lib/server/projects.ts`](../../src/lib/server/projects.ts).
+5. Understand / rebuild / export write engine tables.
 
 ## Evidence
 
-[`extractEvidence`](../../src/lib/blueprint/schema.ts) reads `blueprint.json` (`sourceUrl` / `source_url`, `wordpress`, `techSignals` / `technology`, `forms`, `pages`, `designTokens` / `tokens`, `warnings`, `limitations`). HTML in the ZIP is stored as captured markup, not executed.
+[`extractEvidence`](../../src/lib/blueprint/schema.ts) reads `blueprint.json`. HTML in a ZIP or scan is stored as captured markup, not executed. Canvas iframes **generated** `index.html` only.

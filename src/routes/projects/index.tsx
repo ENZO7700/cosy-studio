@@ -3,6 +3,7 @@ import { AppShell } from "@/components/shell/app-shell";
 import { Button } from "@/components/ui/button";
 import { listProjects } from "@/lib/server/projects";
 import { SOURCE_LABELS, type ProjectListItem } from "@/lib/cosy/types";
+import { readinessFace, statusFace } from "@/lib/copy";
 
 export const Route = createFileRoute("/projects/")({
   loader: () => listProjects(),
@@ -10,7 +11,7 @@ export const Route = createFileRoute("/projects/")({
 });
 
 function StatusChip({ project }: { project: ProjectListItem }) {
-  const label = project.isDemo ? "Demo" : project.status.replaceAll("_", " ");
+  const label = project.isDemo ? "Ukážka" : statusFace(project.status);
   return (
     <span className="rounded-full bg-elevated px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide text-accent">
       {label}
@@ -22,17 +23,18 @@ function ProjectsPage() {
   const projects = Route.useLoaderData();
   return (
     <AppShell
-      kicker="Workspace"
-      title="Projects"
+      kicker="Tím"
+      title="Projekty"
       actions={
         <Link to="/projects/new">
-          <Button>New project</Button>
+          <Button>Nový projekt</Button>
         </Link>
       }
     >
       <div className="mx-auto max-w-5xl">
         <p className="mb-6 max-w-2xl text-sm text-muted">
-          Evidence-backed rebuilds. Face metric is rebuild readiness, never clone percentage.
+          Tu sú weby, ktoré chcete prestavať. Číslo vpravo je, koľko o stránke vieme — nie ako presne
+          ju skopírujeme.
         </p>
         <ul className="space-y-3">
           {projects.map((project) => (
@@ -47,14 +49,11 @@ function ProjectsPage() {
                     <strong>{project.name}</strong>
                     <StatusChip project={project} />
                   </div>
-                  <span className="font-mono text-xs text-muted">
-                    {project.readinessScore !== null
-                      ? `Readiness ${project.readinessScore}%`
-                      : "Readiness pending"}
-                  </span>
+                  <span className="font-mono text-xs text-muted">{readinessFace(project.readinessScore)}</span>
                 </div>
                 <div className="mt-2 text-xs text-muted">
-                  {SOURCE_LABELS[project.sourceType]} · {project.scope?.replaceAll("_", " ") ?? "scope unset"}
+                  {SOURCE_LABELS[project.sourceType]} ·{" "}
+                  {project.scope?.replaceAll("_", " ") ?? "rozsah ešte nie je"}
                 </div>
               </Link>
             </li>

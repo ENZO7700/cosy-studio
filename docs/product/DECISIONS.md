@@ -15,7 +15,9 @@ Locked unless the product owner changes them.
 | Required ZIP files | `blueprint.json`, `manifest.json`, `index.html` |
 | Limits | 8 MB compressed, 32 MB uncompressed, 200 files |
 | Authorization | Required boolean before import |
-| Canvas / Build / Architecture | Honest empty states until their milestone |
+| Canvas / Build / Architecture | Real engines. Canvas previews generated files only. Uploaded HTML is never executed. |
+| Billing | Sandbox plan events. No Stripe charge without keys. |
+| Verification | `cosy-verify generated-tree` exit 0 is stored. Not a cloned-site build. |
 | Tests | `test:all` = unit + persist + smoke. Smoke fails if preview is down |
 | Scope of a pass | Do not jump M3–M8 in one run |
 
