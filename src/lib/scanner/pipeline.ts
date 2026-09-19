@@ -7,6 +7,7 @@
 import { assertPublicUrl } from "@/lib/blueprint/public-url";
 import { findWaybackSnapshot } from "@/lib/blueprint/wayback";
 import { renderWithBrowserShield } from "./browser";
+import type { PublicApiSnapshot } from "./network-json";
 import { SCANNER_USER_AGENT } from "./user-agent";
 
 export type PartialError = {
@@ -29,6 +30,7 @@ export type PipelineFetchResult = {
   waybackUrl: string | null;
   stageUsed: FetchStage;
   partialErrors: PartialError[];
+  publicApiSnapshots: PublicApiSnapshot[];
 };
 
 const MAX_HTML_BYTES = 2_500_000;
@@ -137,6 +139,7 @@ export async function fetchPageWithFallback(opts: {
           waybackUrl: null,
           stageUsed: "headless",
           partialErrors,
+          publicApiSnapshots: r.publicApiSnapshots ?? [],
         };
       }
       partialErrors.push(
@@ -179,6 +182,7 @@ export async function fetchPageWithFallback(opts: {
             waybackUrl: null,
             stageUsed: "http",
             partialErrors,
+          publicApiSnapshots: [],
           };
         }
         throw new Error(`HTTP ${page.status}`);
@@ -195,6 +199,7 @@ export async function fetchPageWithFallback(opts: {
         waybackUrl: null,
         stageUsed: "http",
         partialErrors,
+          publicApiSnapshots: [],
       };
     }
   } catch (err) {
@@ -239,6 +244,7 @@ export async function fetchPageWithFallback(opts: {
         waybackUrl: snap.url,
         stageUsed: "wayback",
         partialErrors,
+          publicApiSnapshots: [],
       };
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") throw err;

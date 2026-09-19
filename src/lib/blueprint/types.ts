@@ -1,5 +1,40 @@
 export type ScanSource = "url" | "html" | "wayback";
 
+import type { JsonSample, PublicApiSnapshot } from "@/lib/scanner/network-json";
+export type { JsonSample, PublicApiSnapshot };
+
+export type ContentSource = "html" | "network" | "sitemap" | "json-ld";
+
+export interface NetworkEnrichedHeading {
+  level: number;
+  text: string;
+  source: "network";
+}
+
+export interface NetworkEnrichedLink {
+  href: string;
+  text: string;
+  internal: boolean;
+  source: "network";
+}
+
+export interface NetworkEnrichedCta {
+  text: string;
+  source: "network";
+}
+
+export interface NetworkEnrichedImage {
+  url: string;
+  source: "network";
+}
+
+export interface PublicSurfaceDocs {
+  robotsTxt: string | null;
+  sitemapUrls: string[];
+  jsonLd: JsonSample[];
+  ogImage: string | null;
+}
+
 export interface BlueprintMeta {
   title: string;
   description: string;
@@ -74,6 +109,7 @@ export interface BlueprintLink {
   href: string;
   text: string;
   internal: boolean;
+  source?: ContentSource;
 }
 
 export interface BlueprintForm {
@@ -172,7 +208,18 @@ export interface Blueprint {
   scripts: string[];
   stylesheets: string[];
   outline: DomOutlineNode[];
-  headings: Array<{ level: number; text: string }>;
+  headings: Array<{ level: number; text: string; source?: ContentSource }>;
+  /** Same-origin public JSON captured during headless render */
+  publicApiSnapshots?: import("@/lib/scanner/network-json").PublicApiSnapshot[];
+  /** Texts/CTAs/images derived from public JSON (source: network) */
+  networkEnrichment?: {
+    headings: NetworkEnrichedHeading[];
+    links: NetworkEnrichedLink[];
+    ctaTexts: NetworkEnrichedCta[];
+    imageUrls: NetworkEnrichedImage[];
+  };
+  /** robots.txt / sitemap / JSON-LD / og:image */
+  publicSurface?: PublicSurfaceDocs;
   html: string;
   cssBundles: Array<{ url: string; css: string }>;
   /** additional same-origin pages from crawl (excludes primary) */

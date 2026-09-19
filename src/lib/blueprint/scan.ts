@@ -40,6 +40,15 @@ import {
 } from "./meta-urls";
 import { detectThinHtml, thinHtmlUserMessage } from "./thin-html";
 import { assertPublicUrl } from "./public-url";
+import {
+  MAX_SITEMAP_URLS,
+  enrichFromPublicJson,
+  extractJsonLdBlocks,
+  extractOgImage,
+  parseSitemapLocs,
+  type PublicApiSnapshot,
+} from "@/lib/scanner/network-json";
+import { SCANNER_USER_AGENT as NET_UA } from "@/lib/scanner/user-agent";
 
 export { assertPublicUrl } from "./public-url";
 
@@ -450,7 +459,7 @@ function extractAssets(root: HTMLElement, base: string): BlueprintAsset[] {
   return assets.slice(0, 200);
 }
 
-function extractHeadings(root: HTMLElement) {
+function extractHeadings(root: HTMLElement): Array<{ level: number; text: string; source?: "html" | "network" }> {
   const out: Array<{ level: number; text: string }> = [];
   for (let level = 1; level <= 6; level++) {
     for (const h of root.querySelectorAll(`h${level}`)) {
@@ -596,7 +605,7 @@ type ParsedPage = {
   links: BlueprintLink[];
   forms: BlueprintForm[];
   assets: BlueprintAsset[];
-  headings: Array<{ level: number; text: string }>;
+  headings: Array<{ level: number; text: string; source?: "html" | "network" }>;
   outline: DomOutlineNode[];
   scripts: string[];
   stylesheets: string[];
@@ -724,7 +733,7 @@ export async function scanToBlueprint(input: ScanRequest): Promise<Blueprint> {
   const partialErrors: PartialError[] = [];
   const limitations = [
     "Blueprint is a frontend snapshot of public content (HTML/CSS/assets/pages) — not a server, DB, or private API clone.",
-    "Headless render helps with SPAs, but still cannot see data behind login or WebSocket/API payloads.",
+    "Headless render captures same-origin public JSON (menus/banners); login-gated or auth/token/odds streams are blocked.",
     "Crawl is same-origin with a page limit; asset capture has size limits.",
     "Scan local URLs (localhost) via “Paste HTML”.",
     "WP/JetEngine mode only reads public REST endpoints and the DOM (not wp-admin / private CCT).",
@@ -741,6 +750,9 @@ export async function scanToBlueprint(input: ScanRequest): Promise<Blueprint> {
   let statusCode: number | null = null;
   let headers: Record<string, string> = {};
   let contentType: string | null = null;
+  let publicApiSnapshots: PublicApiSnapshot[] = [];
+  let networkEnrichmentSaved: ReturnType<typeof enrichFromPublicJson> = { headings: [], links: [], ctaTexts: [], imageUrls: [] };
+  let publicSurface: import("./types").PublicSurfaceDocs = { robotsTxt: null, sitemapUrls: [], jsonLd: [], ogImage: null };
 
   if (input.html && input.html.trim()) {
     source = "html";
@@ -766,6 +778,7 @@ export async function scanToBlueprint(input: ScanRequest): Promise<Blueprint> {
     waybackUrl = pipe.waybackUrl;
     source = pipe.source;
     partialErrors.push(...pipe.partialErrors);
+    publicApiSnapshots = pipe.publicApiSnapshots ?? [];
     if (pipe.stageUsed === "headless") {
       notes.push("Primary page captured via headless render (Playwright shield).");
     } else if (pipe.stageUsed === "http" && pipe.partialErrors.some((e) => e.stage === "headless")) {
@@ -835,6 +848,109 @@ export async function scanToBlueprint(input: ScanRequest): Promise<Blueprint> {
   }
   notes.push(...designSystem.notes);
 
+  // Public surface: JSON-LD + og:image from HTML (always)
+  publicSurface.jsonLd = extractJsonLdBlocks(primary.html);
+  publicSurface.ogImage =
+    extractOgImage(primary.html, base) ||
+    primary.meta.og?.["og:image"] ||
+    null;
+  if (publicSurface.ogImage) {
+    if (!primary.assets.some((a) => a.url === publicSurface.ogImage)) {
+      primary.assets.push({ url: publicSurface.ogImage, type: "image" });
+    }
+  }
+
+  // Same-origin public JSON enrichment (SPA menus/banners/etc.)
+  const networkEnrichment = enrichFromPublicJson(publicApiSnapshots);
+  for (const h of networkEnrichment.headings) {
+    if (!primary.headings.some((x) => x.text === h.text)) {
+      primary.headings.push({ level: h.level, text: h.text, source: "network" });
+    }
+  }
+  for (const l of networkEnrichment.links) {
+    if (!primary.links.some((x) => x.href === l.href)) {
+      primary.links.push({
+        href: l.href,
+        text: l.text,
+        internal: l.internal,
+        source: "network",
+      });
+    }
+  }
+  for (const img of networkEnrichment.imageUrls) {
+    if (!primary.assets.some((a) => a.url === img.url)) {
+      primary.assets.push({ url: img.url, type: "image" });
+    }
+  }
+  if (networkEnrichment.headings.length || networkEnrichment.links.length) {
+    notes.push(
+      `Network JSON enrichment: ${networkEnrichment.headings.length} headings, ${networkEnrichment.links.length} links, ${networkEnrichment.ctaTexts.length} CTAs, ${networkEnrichment.imageUrls.length} images from ${publicApiSnapshots.length} snapshot(s).`,
+    );
+  }
+  // stash for blueprint assembly
+  networkEnrichmentSaved = networkEnrichment;
+
+  // robots.txt + sitemap.xml (URL scans only)
+  if (source !== "html" && base.startsWith("http")) {
+    try {
+      const origin = new URL(base).origin;
+      assertPublicUrl(origin + "/");
+      const robotsUrl = origin + "/robots.txt";
+      assertPublicUrl(robotsUrl);
+      const robotsRes = await fetch(robotsUrl, {
+        redirect: "follow",
+        headers: { "user-agent": NET_UA, accept: "text/plain,*/*" },
+        signal: input.signal,
+      });
+      if (robotsRes.ok) {
+        publicSurface.robotsTxt = (await robotsRes.text()).slice(0, 50_000);
+        notes.push("Fetched /robots.txt");
+      }
+      const sitemapCandidates = [origin + "/sitemap.xml"];
+      if (publicSurface.robotsTxt) {
+        for (const line of publicSurface.robotsTxt.split(/\r?\n/)) {
+          const m = line.match(/^sitemap:\s*(\S+)/i);
+          if (m?.[1]) {
+            try {
+              const su = assertPublicUrl(m[1]).toString();
+              if (!sitemapCandidates.includes(su)) sitemapCandidates.push(su);
+            } catch {
+              /* skip private */
+            }
+          }
+        }
+      }
+      for (const smUrl of sitemapCandidates.slice(0, 3)) {
+        try {
+          assertPublicUrl(smUrl);
+          const smRes = await fetch(smUrl, {
+            redirect: "follow",
+            headers: { "user-agent": NET_UA, accept: "application/xml,text/xml,*/*" },
+            signal: input.signal,
+          });
+          if (!smRes.ok) continue;
+          const xml = (await smRes.text()).slice(0, 500_000);
+          const locs = parseSitemapLocs(xml, origin);
+          publicSurface.sitemapUrls = [
+            ...new Set([...publicSurface.sitemapUrls, ...locs]),
+          ].slice(0, MAX_SITEMAP_URLS);
+          if (locs.length) {
+            notes.push(`Sitemap ${smUrl}: ${locs.length} same-origin URL(s) for crawl.`);
+            break;
+          }
+        } catch (err) {
+          notes.push(
+            `Sitemap fetch skipped: ${err instanceof Error ? err.message : "error"}`,
+          );
+        }
+      }
+    } catch (err) {
+      notes.push(
+        `Public surface fetch failed: ${err instanceof Error ? err.message : "error"}`,
+      );
+    }
+  }
+
   // WordPress + JetEngine architecture extract (REST + listing + Elementor + sitemap)
   let wordpress: WordPressArchitecture | null = null;
   if (wantWp && source !== "html") {
@@ -890,6 +1006,9 @@ export async function scanToBlueprint(input: ScanRequest): Promise<Blueprint> {
 
   if (maxPages > 1 && source !== "html") {
     const seedUrls: string[] = [];
+    if (publicSurface.sitemapUrls.length) {
+      seedUrls.push(...publicSurface.sitemapUrls);
+    }
     if (wordpress) {
       seedUrls.push(...wordpress.navLinks, ...wordpress.footerLinks, ...wordpress.sitemapUrls);
       const restPages = wordpress.rest.pages?.data;
@@ -1192,6 +1311,9 @@ export async function scanToBlueprint(input: ScanRequest): Promise<Blueprint> {
     stylesheets: [...new Set(allStyles)].slice(0, 50),
     outline: primary.outline,
     headings: primary.headings,
+    publicApiSnapshots,
+    networkEnrichment: networkEnrichmentSaved,
+    publicSurface,
     html: primary.rewritten.slice(0, MAX_HTML_BYTES),
     cssBundles: uniqueCss,
     pages,

@@ -27,6 +27,9 @@ export const BlueprintSchema = z
     elementor: z.unknown().optional(),
     warnings: z.array(z.unknown()).optional(),
     limitations: z.array(z.unknown()).optional(),
+    publicApiSnapshots: z.array(z.unknown()).optional(),
+    networkEnrichment: z.unknown().optional(),
+    publicSurface: z.unknown().optional(),
     metadata: z.unknown().optional(),
   })
   .passthrough();
@@ -114,6 +117,18 @@ export function extractEvidence(blueprint: Blueprint): EvidenceDraft[] {
       value: String(blueprint.forms.length),
       confidence: 0.8,
       sourceReference: "blueprint.json#forms",
+      state: "detected",
+    });
+  }
+
+  const snaps = blueprint.publicApiSnapshots;
+  if (Array.isArray(snaps) && snaps.length) {
+    pushUnique(items, {
+      category: "network",
+      label: "Public API JSON snapshots",
+      value: String(snaps.length),
+      confidence: 0.8,
+      sourceReference: "blueprint.json#publicApiSnapshots",
       state: "detected",
     });
   }
